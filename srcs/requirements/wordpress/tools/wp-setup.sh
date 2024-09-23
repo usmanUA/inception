@@ -7,12 +7,11 @@ mariaDB_start() {
 	local ticks=0
 	local wait=1
 
-	until nc -z -v mariadb port 3306; do
+	until mysql -h"$DBHOST" -u"$WP_DBUSR" -p"$WP_DBPWD" "$DBNAME" ; do
 	{
 		ticks=$((ticks + 1))
-		if ["$ticks" -ge "$total"]; then
+		if [ "$ticks" -ge "$total" ]; then
 			echo "\nMariaDB server did not respond. Exiting..."
-			exit 1
 		fi
 		sleep "$wait"
 		echo -n "."
@@ -24,7 +23,7 @@ mariaDB_start() {
 
 wordpressConfig_create() {
 	echo "Creating wp-config.php"
-	wp create config --dbname="$DBNAME" --dbuser="$DBUSER" --dbpass="$DB_USERPASSWORD" --dbhost="mariadb" --allow-root --skip-check
+	wp config create --dbname="$DBNAME" --dbuser="$WP_DBUSR" --dbpass="$WP_DBPWD" --dbhost="$DBHOST" --allow-root --skip-check
 }
 
 wordpressInstall() {
@@ -35,25 +34,26 @@ wordpressInstall() {
 
 wordpressUser_create() {
 	echo "Creating WordPress User..."
-	if ! wp user get "$USER" --field=ID --allow-root > /dev/null 2>$1; then
-		wp user create "$WP_USER" "$WP_EMAIL" --role=author --user_pass="$WP_USRPWD" --allow-root
+	if ! wp user get "$WP_DBUSR" --field=ID --allow-root > /dev/null 2>&1; then
+		wp user create "$WP_DBUSR" "$WP_EMAIL" --role=author --user_pass="$WP_USRPWD" --allow-root
 	else
-		echo "User already exists!"
+		echo "User $WP_DBUSR already exists!"
 	fi
 }
 
 wordpressConfig_setup() {
 	echo "Setting up WordPress Config..."
 	wp config set WP_CACHE true --allow-root
-	wp config set WP_DEBUG --allow-root
+	wp config set WP_DEBUG true --allow-root
 	wp config set FORCE_SSL_ADMIN false --allow-root
 }
 
 main() {
 	# WAIT for mariadb server to start
-	mariaDB_start()
+	mariaDB_start
+	rm -rf wp-config.php
 	# CONFIGURE wordpress if the config file does not exist
-	if [! -f /var/www/html/wp-config.php ]; then
+	if [ ! -f /var/www/html/wp-config.php ]; then
 		echo "Configuring WordPress\n"
 		# CREATE wordpress config file (wp-config.php)
 		wordpressConfig_create
@@ -62,7 +62,7 @@ main() {
 		# CREATE wordpress user
 		wordpressUser_create
 	else
-		echo "Wordpress is already is configured.\n"
+	 	echo "Wordpress is already configured.\n"
 	fi
 	echo -e "Starting PHP-FMP...\n"
 	/usr/sbin/php-fpm7.4 -F

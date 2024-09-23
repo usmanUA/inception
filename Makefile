@@ -39,7 +39,7 @@ up: volumes
 down:
 	@docker compose -f $(DOCKER-COMPOSE) down
 
-clean: consent
+clean:
 	@docker stop $$(docker ps -qa) || true
 	@docker rm $$(docker ps -qa) || true
 	@docker rmi -f $$(docker images -qa) || true
@@ -52,7 +52,7 @@ clean-locally:
 re: down up
 
 consent:
-	@read -p "CRITICAL: Are you sure do you want to delete all data? ACTION is IRREVERSIBLE. [y/N]" confirm && \
+	@read -p "CRITICAL: Are you sure do you want to delete all data? ACTION is IRREVERSIBLE. [y/N]" confirm; \
 		if [ "$$confirm" = "y"]; then \
 			echo "Cleaning Docker data..."; \
 		else \

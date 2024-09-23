@@ -1,48 +1,47 @@
 services:
     nginx:
       container_name: nginx
-      build: ./requirements/nginx/.
+      build: ./requirements/nginx
       image: nginx:42
-      expose:
-        -  "443"
+      ports:
+      -  8443:443
       depends_on:
         - wordpress
       volumes:
         - wordpress-volume:/var/www/html
       networks:
         - inception
-      env_file:
-        - .env
+      env_file: .env
       restart: always
+      cap_add:
+        - NET_BIND_SERVICE
 
     wordpress:
       container_name: wordpress
-      build: ./requirements/wordpress/.
+      build: ./requirements/wordpress/
       image: wordpress:42
-      expose:
-        -  "9000"
+      ports:
+      -  "9000:9000"
       depends_on:
         - mariadb
       volumes:
         - wordpress-volume:/var/www/html
       networks:
         - inception
-      env_file:
-        - .env
+      env_file: .env
       restart: always
 
     mariadb:
       container_name: mariadb
-      build: ./requirements/mariadb/.
+      build: ./requirements/mariadb
       image: mariadb:42
-      expose:
-        -  "3306"
+      ports:
+      -  "3306:3306"
       volumes:
         - mariadb-volume:/var/lib/mysql
       networks:
         - inception
-      env_file:
-        - .env
+      env_file: .env
       restart: always
 
 volumes:

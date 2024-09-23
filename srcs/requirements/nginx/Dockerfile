@@ -7,12 +7,16 @@ RUN	<<EOF
 	apt-get update
 	apt-get upgrade -y
 	apt-get install -y \
-	nginx \
-	openssl
+	nginx openssl curl iputils-ping
 EOF
 
-COPY	./tools/configNginx.sh	/configNginx.sh
+EXPOSE 443
 
+RUN	mkdir -p /etc/ssl/certs /etc/ssl/private
+COPY	./tools/configNginx.sh	/configNginx.sh
 RUN	chmod +x /configNginx.sh
 
-ENTRYPOINT	["/configNginx.sh"]
+COPY	./conf/nginx.conf	/etc/nginx/nginx.conf
+RUN	chmod 644 /etc/nginx/nginx.conf
+
+ENTRYPOINT	["sh", "/configNginx.sh"]

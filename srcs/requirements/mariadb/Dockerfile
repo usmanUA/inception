@@ -5,23 +5,23 @@ FROM debian:bullseye
 RUN <<EOF
 	apt-get update
 	apt-get upgrade -y
-	apt-get install -y mariadb-server
-	mkdir -p /var/lib/mysq
+	apt-get install -y mariadb-server net-tools
+	mkdir -p /var/lib/mysql
 	mkdir -p /run/mysqld
 	chown -R mysql:mysql /var/lib/mysql
 	chown -R mysql:mysql /run/mysqld
 EOF
 
 
-COPY	./conf/mdb-server.cnf	/etc/mysql/mariadb.conf
-RUN	chmod 644 /etc/mysql/mariadb.conf
+COPY	./conf/mdb-server.cnf	/etc/mysql/my.cnf
+RUN	chmod 644 /etc/mysql/my.cnf
 
 COPY	./tools/mdb-server-setup.sh	/bin/mdb-server-setup.sh
 RUN	chmod +x /bin/mdb-server-setup.sh
 
-RUN mariadb-install-db --user=mysql --ldata=/var/lib/mysql
+RUN mysql_install_db --user=mysql --ldata=/var/lib/mysql
 
 EXPOSE 3306
 
-ENTRYPOINT	["/bin/mdb-server-setup.sh"]
+ENTRYPOINT	["sh", "/bin/mdb-server-setup.sh"]
 
