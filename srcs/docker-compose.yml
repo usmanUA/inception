@@ -4,7 +4,7 @@ services:
       build: ./requirements/nginx
       image: nginx:42
       ports:
-      -  8443:443
+      -  443:443
       depends_on:
         - wordpress
       volumes:
@@ -44,12 +44,24 @@ services:
       env_file: .env
       restart: always
 
+    # redis:
+    #   container_name: redis
+    #   build: ./requirements/bonus/redis
+    #   image: redis:42
+    #   ports:
+    #   -  "6379"
+    #   networks:
+    #     - inception
+    #   env_file: .env
+    #   restart: always
+
+
 volumes:
     wordpress-volume:
       name: wordpress-volume
       driver: local
       driver_opts:
-        device: ~/data/wordpress-volume 
+        device: /home/uahmed/data/wordpress-volume 
         o: bind
         type: none
 
@@ -57,7 +69,7 @@ volumes:
       name: mariadb-volume
       driver: local
       driver_opts:
-        device: ~/data/mariadb-volume 
+        device: /home/uahmed/data/wordpress-volume
         o: bind
         type: none
 

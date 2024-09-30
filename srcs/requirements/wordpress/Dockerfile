@@ -8,7 +8,7 @@ RUN	<<EOF
 		apt-get update
 		apt-get upgrade -y
 		apt-get install -y \
-		php7.4 php7.4-mysql php7.4-fpm php7.4-curl php7.4-gd \
+		php7.4 php7.4-mysql php7.4-fpm php7.4-curl php7.4-gd iproute2 \
 		php7.4-intl php7.4-mbstring php7.4-soap php7.4-xml netcat \
 		php7.4-xmlrpc php7.4-zip wget mariadb-client php7.4-redis curl iputils-ping\
 EOF
@@ -18,7 +18,7 @@ RUN	<<EOF
 	    mkdir -p /run/php
 	    chown -R www-data:www-data /run/php
 EOF
-COPY	./conf/wordpress.conf	/etc/php/7.4/fpm/pool.d/wordpress.conf
+COPY	./conf/wordpress.conf	/etc/php/7.4/fpm/pool.d/www.conf
 
 EXPOSE 9000
 # CONFIGURE wordpress

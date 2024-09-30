@@ -48,6 +48,33 @@ wordpressConfig_setup() {
 	wp config set FORCE_SSL_ADMIN false --allow-root
 }
 
+# NOTE: bonus config - redis cache
+wordpress_install_redis() {
+	echo "Installing redis plugins..."
+	wp plugin install redis-cache --allow-root
+	wp plugin activate redis-cache --allow-root
+	wp config set WP_REDIS_HOST "redis" --allow-root
+	wp config set WP_REDIS_PORT 6379 --allow-root
+	wp redis enable --allow-root
+}
+
+# NOTE: set permissions for wordpress
+wordpress_setPermissions() {
+	echo "Setting up permissions for wordpress..."
+	chwon -R www-data:www-data /var/www/html
+	find /var/www/html -type d -exec chown 755 {} \;
+	find /var/www/html -type f -exec chown 644 {} \;
+
+}
+
+# NOTE: set permissions for wordpress
+wordpress_installThemes() {
+	echo "Setting up permissions for wordpress..."
+	wp theme install astra --allow-root
+	wp theme activate astra --allow-root
+	wp theme update astra --allow-root
+}
+
 main() {
 	# WAIT for mariadb server to start
 	mariaDB_start
@@ -61,6 +88,17 @@ main() {
 		wordpressInstall
 		# CREATE wordpress user
 		wordpressUser_create
+
+		# NOTE: bonus config - redis cache
+		# install redis plugin
+		# wordpress_install_redis
+		#
+		# # NOTE: set permissions for the WP website
+		# wordpress_setPermissions
+		#
+		# # NOTE: install theme(s) for the WP website
+		# wordpress_installThemes
+		
 	else
 	 	echo "Wordpress is already configured.\n"
 	fi
