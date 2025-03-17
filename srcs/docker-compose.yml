@@ -61,7 +61,7 @@ volumes:
       name: wordpress-volume
       driver: local
       driver_opts:
-        device: /home/uahmed/data/wordpress-volume 
+        device: ~/data/wordpress-volume 
         o: bind
         type: none
 
@@ -69,7 +69,7 @@ volumes:
       name: mariadb-volume
       driver: local
       driver_opts:
-        device: /home/uahmed/data/wordpress-volume
+        device: ~/data/wordpress-volume
         o: bind
         type: none
 
