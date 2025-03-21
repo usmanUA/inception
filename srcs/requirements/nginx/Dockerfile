@@ -10,7 +10,7 @@ RUN	<<EOF
 	nginx openssl curl iputils-ping
 EOF
 
-EXPOSE 443
+EXPOSE 8443
 
 RUN	mkdir -p /etc/ssl/certs /etc/ssl/private
 COPY	./tools/configNginx.sh	/configNginx.sh

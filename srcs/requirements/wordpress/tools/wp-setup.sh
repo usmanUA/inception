@@ -22,6 +22,17 @@ mariaDB_start() {
 }
 
 wordpressConfig_create() {
+	echo "Checking if WordPress files exist..."
+	if [ ! -f /var/www/html/wp-config.php ]; then
+		echo "Downloading WordPress..."
+		rm -rf /var/www/html/*
+		curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+		touch /usr/local/bin/wp
+		mv wp-cli.phar	/usr/local/bin/wp
+		chmod +x /usr/local/bin/wp
+		wp core download --allow-root
+	fi
+
 	echo "Creating wp-config.php"
 	wp config create --dbname="$DBNAME" --dbuser="$WP_DBUSR" --dbpass="$WP_DBPWD" --dbhost="$DBHOST" --allow-root --skip-check
 }

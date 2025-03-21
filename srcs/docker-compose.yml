@@ -4,7 +4,7 @@ services:
       build: ./requirements/nginx
       image: nginx:42
       ports:
-      -  443:443
+      -  8443:8443
       depends_on:
         - wordpress
       volumes:
@@ -20,8 +20,8 @@ services:
       container_name: wordpress
       build: ./requirements/wordpress/
       image: wordpress:42
-      ports:
-      -  "9000:9000"
+      expose:
+      -  "9000"
       depends_on:
         - mariadb
       volumes:
@@ -35,8 +35,8 @@ services:
       container_name: mariadb
       build: ./requirements/mariadb
       image: mariadb:42
-      ports:
-      -  "3306:3306"
+      expose:
+      -  "3306"
       volumes:
         - mariadb-volume:/var/lib/mysql
       networks:
@@ -69,7 +69,7 @@ volumes:
       name: mariadb-volume
       driver: local
       driver_opts:
-        device: ~/data/wordpress-volume
+        device: ~/data/mariadb-volume
         o: bind
         type: none
 
